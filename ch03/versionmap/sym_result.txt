@@ -1,0 +1,18 @@
+ubuntu@ip-172-31-4-83:~/versionmap$ readelf -s libhello.o -W |grep hello
+     1: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS libhello.c
+     4: 0000000000000068    26 FUNC    LOCAL  DEFAULT    1 local_hello
+    10: 0000000000000000    26 FUNC    GLOBAL DEFAULT    1 global_hello
+    12: 000000000000001a    26 FUNC    WEAK   DEFAULT    1 weak_hello
+    13: 0000000000000034    26 FUNC    GLOBAL HIDDEN     1 hidden_hello
+    14: 000000000000004e    26 FUNC    WEAK   HIDDEN     1 weak_hidden_hello
+    15: 0000000000000082    26 FUNC    GLOBAL DEFAULT    1 global_but_local_hello
+ubuntu@ip-172-31-4-83:~/versionmap$ readelf -s libhello.so -W |grep hello
+     6: 0000000000001133    26 FUNC    WEAK   DEFAULT   15 weak_hello@@LIBSUDOER_1.0
+     8: 0000000000001119    26 FUNC    GLOBAL DEFAULT   15 global_hello@@LIBSUDOER_1.0
+     9: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS libhello.c
+    10: 0000000000001181    26 FUNC    LOCAL  DEFAULT   15 local_hello
+    14: 000000000000119b    26 FUNC    LOCAL  DEFAULT   15 global_but_local_hello
+    17: 0000000000001167    26 FUNC    LOCAL  DEFAULT   15 weak_hidden_hello
+    19: 000000000000114d    26 FUNC    LOCAL  DEFAULT   15 hidden_hello
+    27: 0000000000001133    26 FUNC    WEAK   DEFAULT   15 weak_hello
+    29: 0000000000001119    26 FUNC    GLOBAL DEFAULT   15 global_hello

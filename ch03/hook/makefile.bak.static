@@ -1,0 +1,6 @@
+all:
+	gcc -c libMyHook.c
+	ar -rcs libMyHook.a libMyHook.o 
+	#gcc -shared -fPIC -o libMyHook.so libMyHook.c -ldl
+	gcc -shared -fPIC -o libA.so libA.c
+	gcc -o my_app main.c -L. -lMyHook -lA -Wl,--rpath=. -ldl

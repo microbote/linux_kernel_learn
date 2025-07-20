@@ -1,0 +1,4 @@
+VER_1 {
+        global: print_hello_hidden;hello_world;hello_h;
+        local:  *;      # Hide all other symbols
+};

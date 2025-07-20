@@ -1,0 +1,11 @@
+all:
+	gcc -c libstrong01.c
+	gcc -c libstrong02.c
+	gcc -c libweak.c
+	ar -rc libweak.a libweak.o
+	ar -rc libstrong01.a libstrong01.o
+	ar -rc libstrong02.a libstrong02.o
+	gcc   -o main_a_w main.c -L. -static  -lweak -lstrong01  
+	gcc   -o main_a_whole main.c -L. -static -Wl,--whole-archive   -lweak -lstrong01  -Wl,--no-whole-archive
+	gcc   -o main_a_s2 main.c -L. -static  -lweak -lstrong01 -lstrong02 
+	gcc   -o main_a_whole main.c -L. -static -Wl,--whole-archive   -lweak -lstrong02 -lstrong01 -Wl,--no-whole-archive
