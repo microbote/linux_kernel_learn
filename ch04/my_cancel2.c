@@ -35,7 +35,7 @@ void* deferred_cancel_thread(void* arg) {
     time_t sleep_end_time = time(NULL);
     
     my_log("    [线程活动] 线程 1：sleep 完成（如果到达这里，表示未被取消或取消未及时响应）");
-    my_log("    [线程活动] 线程 1：实际 sleep 时长 %ld 秒。\n", (long)(sleep_end_time - sleep_start_time));
+    my_log("    [线程活动] 线程 1：实际 sleep 时长 %d 秒。\n", (long)(sleep_end_time - sleep_start_time));
 
     my_log("    [线程退出] 线程 1：安全退出（不应到达）");
     return (void*)0;
@@ -66,7 +66,7 @@ void* async_cancel_thread(void* arg) {
     time_t sleep_end_time = time(NULL);
 
     my_log("    [线程活动] 线程 2：sleep 完成（如果到达这里，表示未被取消或取消未及时响应）");
-    my_log("    [线程活动] 线程 2：实际 sleep 时长 %ld 秒。\n", (long)(sleep_end_time - sleep_start_time));
+    my_log("    [线程活动] 线程 2：实际 sleep 时长 %d 秒。\n", (long)(sleep_end_time - sleep_start_time));
 
     my_log("    [线程退出] 线程 2：安全退出（不应到达）");
     return (void*)0;
