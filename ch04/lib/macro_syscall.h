@@ -8,7 +8,8 @@
 #include <unistd.h> // For close, and __NR_* syscall numbers (if not using custom defines)
 #include <sys/stat.h> // For mode_t (e.g., S_IRUSR)
 #include <sys/time.h> // For struct timeval in gettimeofday 
-#include <time.h> // For localtime_r
+#include <time.h>   // For time_t, struct tm, localtime_r, strftime 
+
 // --- 1. System Call Numbers (x86-64 Linux) ---
 // These are standard Linux x86-64 syscall numbers.
 // You can find them in /usr/include/asm/unistd_64.h or similar headers.
@@ -18,6 +19,7 @@
 #define SYS_OPENAT  257
 #define SYS_GETPID  39
 #define SYS_GETTIMEOFDAY 96 // __NR_gettimeofday
+#define SYS_NANOSLEEP    35 // __NR_nanosleep (for my_sleep implementation)
 
 // --- 2. Macro for Type Deduction and Argument Conversion (Glibc-style) ---
 // TYPEFY1(X): Gets the type of (X - X). For pointers, this is ptrdiff_t. For numbers, it's the number type.
@@ -209,5 +211,17 @@ int now_local_str(char time_str[], size_t n){
                                  ".%06ld] ", current_usec);
     return full_time_len;
 }
+
+// --- my_sleep 函数实现 ---
+// 模拟标准的 sleep() 函数，但基于 nanosleep 系统调用
+void my_sleep(unsigned int seconds) {
+    struct timespec req;
+    req.tv_sec = seconds;
+    req.tv_nsec = 0; // 0 纳秒
+
+    // rem 参数可以为 NULL，表示不关心剩余时间
+    SYS_CALL(SYS_NANOSLEEP, &req, NULL); 
+}
+
 
 #endif
