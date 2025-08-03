@@ -54,3 +54,7 @@ build/
 
 # debug information files
 *.dwo
+
+# directory
+build/
+test/

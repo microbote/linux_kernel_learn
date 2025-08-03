@@ -1,4 +1,5 @@
 #include "my_log.h"
+#include "my_syscall.h"
 #include <pthread.h>
 
 // --- 线程函数用于测试 ---
