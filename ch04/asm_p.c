@@ -9,7 +9,7 @@ int main() {
     asm volatile (
         "movl (%1), %0"
         : "=r" (value) // Output to a register
-        : "r" (ptr)    // Input is a pointer value
+        : "p" (ptr)    // Input is a pointer value
     );
 
     printf("Value pointed to by ptr: %d\n", value); // Expected: 3
