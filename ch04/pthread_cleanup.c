@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h> // for sleep()
-#include "lib/my_log.h"
+#include "mylibc/my_log.h"
 
 pthread_mutex_t my_c_mutex = PTHREAD_MUTEX_INITIALIZER;
 

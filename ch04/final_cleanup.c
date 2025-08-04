@@ -2,7 +2,7 @@
 #include <pthread.h>
 #include <unistd.h> // For sleep()
 #include <stdlib.h> // For malloc, free
-#include "lib/my_log.h"
+#include "mylibc/my_log.h"
 
 // Global mutex (Resource 1)
 pthread_mutex_t global_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -17,7 +17,7 @@ void cleanup_mutex_handler(void* arg) {
 void cleanup_memory_handler(void* arg) {
     char* mem_ptr = (char*)arg;
     if (mem_ptr != NULL) { // 确保指针非空，防止重复释放或释放无效内存
-        my_log("    [Cleanup Handler 2] 正在执行: 释放动态分配内存 @ %d！\n", (void*)mem_ptr);
+        my_log("    [Cleanup Handler 2] 正在执行: 释放动态分配内存 @ %p！\n", (void*)mem_ptr);
         free(mem_ptr);
     }
 }
@@ -51,7 +51,7 @@ void* thread_func_best_practice(void* arg) {
     // --- (4) Push Cleanup Handler 2 for Dynamic Memory ---
     // This handler must be pushed immediately after acquiring the memory.
     pthread_cleanup_push(cleanup_memory_handler, (void*)dynamic_buffer)
-    my_log("线程 %d: 动态内存分配成功 @ %d。\n", thread_id, (void*)dynamic_buffer);
+    my_log("线程 %d: 动态内存分配成功 @ %p。\n", thread_id, (void*)dynamic_buffer);
     strcpy(dynamic_buffer, "Hello from dynamic memory!");
 
     // --- Main Thread Work (potentially long-running or with cancellation points) ---
@@ -80,7 +80,7 @@ cleanup_and_exit2:
     // Pop Handler 2 (for dynamic memory) first.
         pthread_cleanup_pop(0); // Pop but DO NOT execute
         // Explicitly free memory here for normal/goto exit path.
-        my_log("线程 %d: 显式释放动态内存 @ %d。\n", thread_id, (void*)dynamic_buffer);
+        my_log("线程 %d: 显式释放动态内存 @ %p。\n", thread_id, (void*)dynamic_buffer);
         free(dynamic_buffer);
 
 cleanup_and_exit1:
@@ -108,14 +108,14 @@ int main() {
     my_log("\n[主线程] 测试 线程 1 (正常完成)。\n");
     pthread_create(&tid1, NULL, thread_func_best_practice, &id1);
     pthread_join(tid1, &res1);
-    my_log("[主线程] 线程 1 结束，返回状态: %d\n", res1);
+    my_log("[主线程] 线程 1 结束，返回状态: %d\n", *(int*)res1);
 
     // --- Test Case 2: Early Exit due to Malloc Failure (simulated by thread_id=2) ---
     // This test case will show cleanup without the memory handler pushed
     my_log("\n[主线程] 测试 线程 2 (模拟内存分配失败提前退出)。\n");
     pthread_create(&tid2, NULL, thread_func_best_practice, &id2);
     pthread_join(tid2, &res2);
-    my_log("[主线程] 线程 2 结束，返回状态: %d\n", res2);
+    my_log("[主线程] 线程 2 结束，返回状态: %d\n", *(int *)res2);
 
     // --- Test Case 3: Cancellation during sleep (for thread_id=3) ---
     my_log("\n[主线程] 测试 线程 3 (取消点被取消)。\n");
@@ -127,7 +127,7 @@ int main() {
     if (res3 == PTHREAD_CANCELED) {
         my_log("[主线程] 线程 3 被成功取消 (返回值：PTHREAD_CANCELED)。\n");
     } else {
-        my_log("[主线程] 线程 3 未被取消，返回状态：%d (不应发生)。\n", res3);
+        my_log("[主线程] 线程 3 未被取消，返回状态：%d (不应发生)。\n", *(int*)res3);
     }
 
     my_log("\n--- 测试结束 ---\n");

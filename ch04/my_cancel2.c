@@ -4,7 +4,7 @@
 #include <string.h> // For strerror
 #include <errno.h>  // For errno
 #include <time.h>   // For time()
-#include "lib/my_log.h"
+#include "mylibc/my_log.h"
 
 
 // 线程函数：延迟取消模式
@@ -23,7 +23,7 @@ void* deferred_cancel_thread(void* arg) {
 	sum += i;
         if (i % 100000000 == 0) { // 每隔一段时间检查一次
 			  //
-	    my_log("线程1:EXEC %d,make cancelpoint\n",i);
+	    my_log("线程1:EXEC %ld,make cancelpoint\n",i);
             //pthread_testcancel(); // 如果在这里调用，会成为一个显式取消点
         }
     }
@@ -35,7 +35,7 @@ void* deferred_cancel_thread(void* arg) {
     time_t sleep_end_time = time(NULL);
     
     my_log("    [线程活动] 线程 1：sleep 完成（如果到达这里，表示未被取消或取消未及时响应）");
-    my_log("    [线程活动] 线程 1：实际 sleep 时长 %d 秒。\n", (long)(sleep_end_time - sleep_start_time));
+    my_log("    [线程活动] 线程 1：实际 sleep 时长 %ld 秒。\n", (long)(sleep_end_time - sleep_start_time));
 
     my_log("    [线程退出] 线程 1：安全退出（不应到达）");
     return (void*)0;
@@ -54,7 +54,7 @@ void* async_cancel_thread(void* arg) {
 	sum += i;
         if (i % 100000000 == 0) { // 每隔一段时间检查一次
 			  //
-	    my_log("线程2:EXEC %d,no cancelpoint\n",i);
+	    my_log("线程2:EXEC %ld,no cancelpoint\n",i);
 	    // 异步取消模式不需要设置取消点
             //pthread_testcancel(); // 如果在这里调用，会成为一个显式取消点
         }
@@ -66,7 +66,7 @@ void* async_cancel_thread(void* arg) {
     time_t sleep_end_time = time(NULL);
 
     my_log("    [线程活动] 线程 2：sleep 完成（如果到达这里，表示未被取消或取消未及时响应）");
-    my_log("    [线程活动] 线程 2：实际 sleep 时长 %d 秒。\n", (long)(sleep_end_time - sleep_start_time));
+    my_log("    [线程活动] 线程 2：实际 sleep 时长 %ld 秒。\n", (long)(sleep_end_time - sleep_start_time));
 
     my_log("    [线程退出] 线程 2：安全退出（不应到达）");
     return (void*)0;

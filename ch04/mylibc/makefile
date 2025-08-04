@@ -27,7 +27,7 @@ $(shell mkdir -p $(TEST_DIR)) # Uncomment to auto-create build directory
 $(info TEST_DIR = $(TEST_DIR))
 
 # --- Library Definitions ---
-LIB_NAME = my_syscalls
+LIB_NAME = mylibc
 LIB_SO = lib$(LIB_NAME).so
 LIB_SRC = my_syscall.c my_log.c # Source files that form the library
 LIB_OBJ = $(addprefix $(BUILD_DIR)/,$(patsubst %.c,%.o,$(LIB_SRC)))

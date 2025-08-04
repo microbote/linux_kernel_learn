@@ -4,7 +4,7 @@
 #define LOG_MESSAGE(...) fprintf(stderr, __VA_ARGS__)
 
 // 带固定参数的可变参数宏
-#define LOG(level, format, ...) fprintf(stderr, "[%s] " format , level, __VA_ARGS__)
+#define LOG(level, format, ...) fprintf(stderr, "[%s] " format , level, ##__VA_ARGS__)
 
 #define DEBUG "DEBUG"
 #define ERROR "ERROR"

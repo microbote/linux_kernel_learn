@@ -7,7 +7,6 @@ struct MyData {
 
 int main() {
     struct MyData data = {10, 20};
-    int result;
 
     // Add 5 to data.value2 directly in memory using an offset
     asm volatile (

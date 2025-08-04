@@ -4,7 +4,7 @@
 #include <string.h> // For strerror
 #include <errno.h>  // For errno
 #include <time.h>   // For time()
-#include "lib/my_log.h"
+#include "mylibc/my_log.h"
 
 
 // 线程函数：延迟取消模式

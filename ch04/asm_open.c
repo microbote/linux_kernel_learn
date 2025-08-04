@@ -1,28 +1,50 @@
-#include<fcntl.h>
+#include <fcntl.h>
 #include <unistd.h> // For close()
 #include <stdio.h>  // For perror(), printf()
 #include <errno.h>  // For errno
 
+// Correct syscall number for openat on x86-64 Linux
+#define SYS_OPENAT 257 // Note: Your 0xFE (254) is for io_setup. openat is 257.
+                       // Please double-check /usr/include/asm/unistd_64.h for your system if unsure.
+                       // For simple 'open', it's syscall 2.
+
 int main(){
     const char *filename = "test_file.txt";
-    int mode = O_WRONLY | O_CREAT | O_TRUNC;
-    int priv = 0644;
+    int flags = O_WRONLY | O_CREAT | O_TRUNC; // Renamed 'mode' to 'flags' for clarity
+    int priv = 0644; // File permissions (mode_t)
     int fd;
+    int dfd = AT_FDCWD; // For openat, -100 means current working directory
 
-    printf("尝试使用 syscall 打开文件 '%s',模式:%x, 权限: %x\n", filename, mode,priv);
+    printf("尝试使用 syscall (openat) 打开文件 '%s', flags:%x, 权限: %x\n", filename, flags, priv);
 
-    //fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    // Call openat(AT_FDCWD, filename, flags, priv)
     __asm__ __volatile__ (
-        "movl $0xFE %%eax;\n\t" /* openat */
-        "syscall;\n\t"
-        "movl %%rax %0;\n\t"
-        : "=m"(fd)
-        /* 按照手册放置变量到正确的寄存器 */
-        : "D"(filename),"s"(mode),"d"(priv)
+        "syscall"
+        // Output:
+        // "=a"(fd): The return value from syscall (in %rax) goes into 'fd'.
+        : "=a"(fd)
+        // Inputs:
+        // "D"(dfd):       arg1 in %rdi (AT_FDCWD)
+        // "S"(filename):  arg2 in %rsi (pointer to filename string)
+        // "d"(flags):     arg3 in %rdx (open flags)
+        // "r"(priv):      arg4 in %r10 (file permissions/mode_t) - note: "r" for r10
+        // "0"(SYS_OPENAT): syscall number 257 in %rax (tied to output %rax)
+        : "D"(dfd),        // %rdi
+          "S"(filename),   // %rsi
+          "d"(flags),      // %rdx
+          "r"(priv),       // %r10 (Using 'r' as a general register for r10 as there's no specific 'r10' constraint character)
+          "a"(SYS_OPENAT)  // %rax (syscall number)
+        // Clobbered registers:
+        // "rcx", "r11": These are destroyed by the 'syscall' instruction.
+        // "memory": Tells GCC that memory might have changed (e.g., file system state).
+        : "rcx", "r11", "memory"
     );
 
-    if (fd == -1) {
-        perror("open 调用失败");
+    if (fd < 0) { // Check for negative return values indicating an error
+        // On Linux, system calls return -errno on failure.
+        // We set the global errno variable from this return value.
+        errno = -fd;
+        perror("openat 调用失败");
         printf("错误码: %d\n", errno);
         return 1;
     }
@@ -38,4 +60,3 @@ int main(){
     printf("文件 '%s' 成功关闭\n", filename);
     return 0;
 }
-
